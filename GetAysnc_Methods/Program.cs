@@ -6,6 +6,7 @@ using Mono;
 using Mono.Cecil;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace GetAysnc_Methods
 {
@@ -18,8 +19,8 @@ namespace GetAysnc_Methods
         {
             StringBuilder sb = new StringBuilder();
 
-            string loc =  (args != null & args[0] !=null)? args[0] : @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\";
-            string filepath = (args != null & args[1] != null) ? args[1] :@"c:\temp\list.txt";
+            string loc = (args.Length >0) ? args[0] : @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\";
+            string filepath = (args.Length > 1) ? args[1] : @"c:\temp\list.txt";
             DirSearch(loc);
             _filelist.Sort();
             foreach (string fname in _filelist)
@@ -65,9 +66,12 @@ namespace GetAysnc_Methods
                         {
                             foreach (var att in method.CustomAttributes)
                             {
-                                // AsyncStateMachineAttribute - This attribute is not available in all classes
-                                if (att.AttributeType.Name == "AsyncStateMachineAttribute" || method.Name.ToUpper().IndexOf("ASYNC", 0) > 0)
+
+                                // AsyncStateMachineAttribute - This attribute is not available in all methodes - meaning there are methods with a name ending with async
+                                if (att.AttributeType.Name == "AsyncStateMachineAttribute")// || method.Name.ToUpper().IndexOf("ASYNC", 0) > 0)
                                 {
+                                    Debug.Print(method.Attributes.ToString());
+                                    Debug.Print("\t" + att.AttributeType.Name);
                                     _methodnamelist.Add("\"" + module.Assembly.FullName + "\"," + type.Name + ", " + method.Name);
                                     continue;
                                 }
